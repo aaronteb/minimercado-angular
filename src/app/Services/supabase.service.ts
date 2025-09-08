@@ -11,7 +11,14 @@ export class SupabaseService {
   constructor() {
     this.supabase = createClient(
       environment.supabaseUrl,
-      environment.supabaseAnonKey
+      environment.supabaseAnonKey,
+      {
+        auth: {
+          storage: window.localStorage,
+          persistSession: true,
+          autoRefreshToken: true
+        }
+      }
     );
   }
 
@@ -29,6 +36,10 @@ export class SupabaseService {
 
   getUser() {
     return this.supabase.auth.getUser();
+  }
+
+  getCurrentSession() {
+    return this.supabase.auth.getSession();
   }
 
   async recuperarPassword(email: string) {

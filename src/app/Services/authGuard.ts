@@ -6,9 +6,9 @@ export const authGuard = async () => {
   const supabaseService = inject(SupabaseService);
   const router = inject(Router);
 
-  const { data } = await supabaseService.getUser();
+  const { data: { session } } = await supabaseService.getCurrentSession();
   
-  if (data.user) {
+  if (session?.access_token) {
     return true; 
   } else {
     router.navigate(['/login']); 
