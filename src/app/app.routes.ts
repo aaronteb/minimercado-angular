@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login';
 import { NuevaContrasena } from './components/nueva-contrasena/nueva-contrasena';
 import { Dashboard } from './components/dashboard/dashboard';
+import { ProductosComponent } from './components/productos/productos';
 import { authGuard } from './Services/authGuard';
 
 export const routes: Routes = [
@@ -11,6 +12,11 @@ export const routes: Routes = [
   { 
     path: 'dashboard', 
     component: Dashboard,
+    canActivate: [authGuard] 
+  },
+  { 
+    path: 'productos', 
+    component: ProductosComponent,
     canActivate: [authGuard] 
   },
   { path: '**', redirectTo: '/login' }

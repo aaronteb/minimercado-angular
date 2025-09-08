@@ -1,6 +1,139 @@
-<h2>Productos disponibles</h2>
-<ul>
-  <li *ngFor="let producto of productos">
-    {{ producto.nombre }} - ${{ producto.precio }} - Stock: {{ producto.stock }}
-  </li>
-</ul>
+<div class="productos-wrapper">
+  <!-- Header -->
+  <header class="productos-header">
+    <div class="header-content">
+      <div class="header-left">
+        <button class="back-btn" (click)="volver()">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="page-title">
+          <div class="title-icon">
+            <i class="fas fa-boxes"></i>
+          </div>
+          <h1>Productos</h1>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="add-btn" (click)="agregarProducto()">
+          <i class="fas fa-plus"></i>
+          Agregar Producto
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="productos-content">
+    <!-- Search Section -->
+    <section class="search-filter-section">
+      <div class="search-bar">
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Buscar por nombre, precio o stock..."
+          [(ngModel)]="searchTerm"
+          (input)="filtrarProductos()"
+        >
+      </div>
+    </section>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="loading">
+      <div class="spinner"></div>
+      <div class="loading-text">Cargando productos...</div>
+    </div>
+
+    <!-- Empty State cuando no hay resultados de búsqueda -->
+    <div class="empty-state" *ngIf="!loading && productosFiltrados.length === 0 && productos.length > 0 && !mostrarMensaje">
+      <div class="empty-icon">
+        <i class="fas fa-search"></i>
+      </div>
+      <p>Sin Resultados</p>
+    </div>
+
+    <!-- Empty State cuando no hay productos -->
+    <div class="empty-state" *ngIf="!loading && productos.length === 0">
+      <div class="empty-icon">
+        <i class="fas fa-box-open"></i>
+      </div>
+      <h3>No hay productos disponibles</h3>
+      <p>Comienza agregando tu primer producto al inventario</p>
+      <button class="add-btn" (click)="agregarProducto()">
+        <i class="fas fa-plus"></i>
+        Agregar Primer Producto
+      </button>
+    </div>
+
+    <!-- Productos Grid -->
+    <div class="productos-grid" *ngIf="!loading && productosVisibles.length > 0">
+      <div class="producto-card" *ngFor="let producto of productosVisibles" (click)="verDetalles(producto)">
+        <div class="producto-header">
+          <div class="producto-info">
+            <h3>{{ producto.nombre }}</h3>
+            <div class="producto-precio">
+              <span class="precio-currency">$</span>{{ producto.precio | number:'1.2-2' }}
+            </div>
+          </div>
+          <div class="producto-actions" (click)="$event.stopPropagation()">
+            <button class="action-btn edit-btn" (click)="editarProducto(producto)" title="Editar producto">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="action-btn delete-btn" (click)="eliminarProducto(producto)" title="Eliminar producto">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="stock-section">
+          <div class="stock-info">
+            <div class="stock-icon" [ngClass]="{
+              'stock-alto': producto.stock > 20,
+              'stock-medio': producto.stock > 5 && producto.stock <= 20,
+              'stock-bajo': producto.stock <= 5
+            }">
+              <i class="fas fa-cubes"></i>
+            </div>
+            <span class="stock-texto">Stock disponible:</span>
+          </div>
+          <span class="stock-numero">{{ producto.stock }} unidades</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paginación -->
+    <div class="pagination-section" *ngIf="!loading && productosFiltrados.length > productosPorPagina">
+      <div class="pagination-container">
+        <div class="pagination-info">
+          <span>Mostrando {{ ((paginaActual - 1) * productosPorPagina) + 1 }} - {{ Math.min(paginaActual * productosPorPagina, productosFiltrados.length) }} de {{ productosFiltrados.length }} productos</span>
+        </div>
+        
+        <div class="pagination-controls">
+          <button 
+            class="pagination-btn prev-btn" 
+            [disabled]="paginaActual === 1"
+            (click)="cambiarPagina(paginaActual - 1)">
+            <i class="fas fa-chevron-left"></i>
+            Anterior
+          </button>
+          
+          <div class="pagination-numbers">
+            <button 
+              *ngFor="let pagina of getPaginasVisibles()" 
+              class="pagination-number"
+              [class.active]="pagina === paginaActual"
+              (click)="cambiarPagina(pagina)">
+              {{ pagina }}
+            </button>
+          </div>
+          
+          <button 
+            class="pagination-btn next-btn" 
+            [disabled]="paginaActual === totalPaginas"
+            (click)="cambiarPagina(paginaActual + 1)">
+            Siguiente
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>

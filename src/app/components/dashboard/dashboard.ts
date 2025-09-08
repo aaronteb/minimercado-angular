@@ -21,7 +21,7 @@ export class Dashboard implements OnInit {
       descripcion: 'Gestión de ventas diarias'
     },
     { 
-      titulo: 'Inventario',
+      titulo: 'Productos',
       icono: 'fas fa-boxes',
       color: '#45B7D1',
       descripcion: 'Control de productos y stock'
@@ -58,12 +58,10 @@ export class Dashboard implements OnInit {
   ) {}
 
   async ngOnInit() {
-    // Obtener datos del usuario logueado
     const { data } = await this.supabaseService.getUser();
     if (data.user) {
       this.userEmail = data.user.email || 'Usuario';
     } else {
-      // Si no hay usuario, redirigir al login
       this.router.navigate(['/login']);
     }
   }
@@ -75,6 +73,8 @@ export class Dashboard implements OnInit {
 
   seleccionarSeccion(seccion: any) {
     console.log('Sección seleccionada:', seccion.titulo);
-    // Aquí irá la navegación futura
+    if (seccion.titulo === 'Productos') {
+      this.router.navigate(['/productos']);
+    }
   }
 }
