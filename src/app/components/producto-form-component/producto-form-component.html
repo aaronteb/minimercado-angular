@@ -15,26 +15,22 @@
       </button>
     </div>
 
-    <!-- Mensaje de respuesta -->
-    @if (mostrarMensaje) {
-      <div 
-        class="mensaje-respuesta"
-        [ngClass]="{'show': mostrarMensaje, 'exito': mensajeTipo === 'exito', 'error': mensajeTipo === 'error'}">
-        <span class="mensaje-icono">{{ mensajeTipo === 'exito' ? '✓' : '⚠' }}</span>
-        <span class="mensaje-texto">{{ mensajeTexto }}</span>
-      </div>
-    }
+    <!-- Mensaje de respuesta usando el componente -->
+    <app-respuesta 
+      [mensaje]="mensajeTexto"
+      [tipo]="mensajeTipo"
+      [visible]="mostrarMensaje">
+    </app-respuesta>
 
     <!-- Formulario -->
     <form [formGroup]="productoForm" (ngSubmit)="onSubmit()" class="producto-form">
       <div class="form-grid">
         
-        <!-- Código del producto (opcional) -->
+        <!-- Código del producto -->
         <div class="campo-grupo">
           <label for="codigo" class="campo-label">
             <i class="fas fa-barcode"></i>
-            Código del producto
-            <span class="campo-opcional">(opcional)</span>
+            Código del producto <span class="campo-requerido">*</span>
           </label>
           <input
             type="text"
@@ -43,10 +39,11 @@
             class="campo-input"
             [class.campo-error]="esCampoInvalido('codigo')"
             placeholder="Ej: PROD001"
-            maxlength="50">
+            maxlength="50"
+            required>
           @if (esCampoInvalido('codigo')) {
             <div class="error-mensaje">
-              {{ obtenerMensajeError('codigo') }}
+              El código es requerido (mínimo 2 caracteres)
             </div>
           }
         </div>
@@ -68,7 +65,7 @@
             required>
           @if (esCampoInvalido('nombre')) {
             <div class="error-mensaje">
-              {{ obtenerMensajeError('nombre') }}
+              El nombre es requerido (mínimo 2 caracteres)
             </div>
           }
         </div>
@@ -95,7 +92,7 @@
           </div>
           @if (esCampoInvalido('precio')) {
             <div class="error-mensaje">
-              {{ obtenerMensajeError('precio') }}
+              El precio es requerido y debe ser mayor a 0
             </div>
           }
         </div>
@@ -118,7 +115,7 @@
             required>
           @if (esCampoInvalido('stock')) {
             <div class="error-mensaje">
-              {{ obtenerMensajeError('stock') }}
+              El stock es requerido y debe ser mayor o igual a 0
             </div>
           }
         </div>
@@ -148,9 +145,7 @@
           class="btn btn-primario"
           [disabled]="loading || productoForm.invalid">
           @if (loading) {
-            <span class="loading-spinner">
-              <i class="fas fa-spinner"></i>
-            </span>
+            <app-loader></app-loader>
             Procesando...
           } @else {
             <i class="fas" [ngClass]="modoEdicion ? 'fa-edit' : 'fa-save'"></i>
@@ -160,15 +155,13 @@
       </div>
 
       <!-- Información adicional -->
-      @if (!modoEdicion) {
-        <div class="form-info">
-          <small class="texto-muted">
-            <i class="fas fa-info-circle"></i>
-            Todos los campos marcados con <span class="campo-requerido">*</span> son obligatorios.
-            El código debe ser único para cada producto.
-          </small>
-        </div>
-      }
+      <div class="form-info">
+        <small class="texto-muted">
+          <i class="fas fa-info-circle"></i>
+          Todos los campos marcados con <span class="campo-requerido">*</span> son obligatorios.
+          El código debe ser único para cada producto.
+        </small>
+      </div>
     </form>
   </div>
 </div>
