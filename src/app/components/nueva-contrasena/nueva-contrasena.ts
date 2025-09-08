@@ -25,10 +25,21 @@ export class NuevaContrasena implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Verificar si hay error en la URL
     this.route.fragment.subscribe(fragment => {
       if (fragment && fragment.includes('error')) {
-        this.mostrar('El enlace ha expirado o es inválido. Solicita uno nuevo.', 'error');
+        this.mostrar('El enlace ha expirado o es inválido. Serás redirigido al login.', 'error');
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 2000);
+      }
+    });
+
+    this.route.queryParams.subscribe(params => {
+      if (params['error']) {
+        this.mostrar('El enlace ha expirado o es inválido. Serás redirigido al login.', 'error');
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 2000);
       }
     });
   }

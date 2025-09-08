@@ -1,12 +1,15 @@
+<!-- Loader - NUEVO -->
+<app-loader *ngIf="cargando"></app-loader>
+
 <!-- Mensaje de respuesta (éxito/error) -->
 <app-respuesta
   [mensaje]="mensaje"
   [tipo]="tipo"
-  [visible]="mostrarMensaje">
+  [visible]="mostrarMensaje && !cargando">
 </app-respuesta>
 
 <!-- Login -->
-<div class="login-wrapper" *ngIf="!mostrarRecuperacion">
+<div class="login-wrapper" *ngIf="!mostrarRecuperacion && !cargando">
   <div class="login-container">
     
     <div class="login-header">
@@ -28,6 +31,7 @@
             [(ngModel)]="email" 
             name="email" 
             placeholder="Email"
+            [disabled]="cargando"
             required
           />
         </div>
@@ -43,27 +47,29 @@
             [(ngModel)]="password" 
             name="password" 
             placeholder="Contraseña"
+            [disabled]="cargando"
             required
           />
         </div>
       </div>
 
       <!-- Botón de login -->
-      <button type="submit" class="login-btn">
-        <i class="fas fa-sign-in-alt"></i>
-        Ingresar
+      <button type="submit" class="login-btn" [disabled]="cargando">
+        <i class="fas fa-sign-in-alt" *ngIf="!cargando"></i>
+        <i class="fas fa-spinner fa-spin" *ngIf="cargando"></i>
+        {{ cargando ? 'Ingresando...' : 'Ingresar' }}
       </button>
 
-      <!-- Botón de recuperar contraseña -->
-      <button type="button" class="link-btn" (click)="mostrarRecuperacion = true">
+      <!-- Enlace de recuperar contraseña -->
+      <p class="forgot-password" (click)="mostrarRecuperacion = true" [class.disabled]="cargando">
         ¿Olvidaste tu contraseña?
-      </button>
+      </p>
 
     </form>
   </div>
 </div>
 
 <!-- Recuperar Contraseña -->
-<div *ngIf="mostrarRecuperacion">
+<div *ngIf="mostrarRecuperacion && !cargando">
   <app-recuperar-contrasena (volver)="mostrarRecuperacion = false"></app-recuperar-contrasena>
 </div>
