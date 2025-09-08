@@ -1,0 +1,174 @@
+<div class="producto-form-wrapper">
+  <div class="producto-form-container">
+    <!-- Header -->
+    <div class="form-header">
+      <h2 class="form-title">
+        <i class="icon" [ngClass]="modoEdicion ? 'edit-icon' : 'add-icon'"></i>
+        {{ modoEdicion ? 'Editar Producto' : 'Nuevo Producto' }}
+      </h2>
+      <button 
+        type="button" 
+        class="btn-volver"
+        (click)="volver()"
+        [disabled]="loading">
+        <i class="fas fa-arrow-left"></i> Volver
+      </button>
+    </div>
+
+    <!-- Mensaje de respuesta -->
+    @if (mostrarMensaje) {
+      <div 
+        class="mensaje-respuesta"
+        [ngClass]="{'show': mostrarMensaje, 'exito': mensajeTipo === 'exito', 'error': mensajeTipo === 'error'}">
+        <span class="mensaje-icono">{{ mensajeTipo === 'exito' ? '✓' : '⚠' }}</span>
+        <span class="mensaje-texto">{{ mensajeTexto }}</span>
+      </div>
+    }
+
+    <!-- Formulario -->
+    <form [formGroup]="productoForm" (ngSubmit)="onSubmit()" class="producto-form">
+      <div class="form-grid">
+        
+        <!-- Código del producto (opcional) -->
+        <div class="campo-grupo">
+          <label for="codigo" class="campo-label">
+            <i class="fas fa-barcode"></i>
+            Código del producto
+            <span class="campo-opcional">(opcional)</span>
+          </label>
+          <input
+            type="text"
+            id="codigo"
+            formControlName="codigo"
+            class="campo-input"
+            [class.campo-error]="esCampoInvalido('codigo')"
+            placeholder="Ej: PROD001"
+            maxlength="50">
+          @if (esCampoInvalido('codigo')) {
+            <div class="error-mensaje">
+              {{ obtenerMensajeError('codigo') }}
+            </div>
+          }
+        </div>
+
+        <!-- Nombre del producto -->
+        <div class="campo-grupo">
+          <label for="nombre" class="campo-label">
+            <i class="fas fa-tag"></i>
+            Nombre del producto <span class="campo-requerido">*</span>
+          </label>
+          <input
+            type="text"
+            id="nombre"
+            formControlName="nombre"
+            class="campo-input"
+            [class.campo-error]="esCampoInvalido('nombre')"
+            placeholder="Nombre del producto"
+            maxlength="100"
+            required>
+          @if (esCampoInvalido('nombre')) {
+            <div class="error-mensaje">
+              {{ obtenerMensajeError('nombre') }}
+            </div>
+          }
+        </div>
+
+        <!-- Precio -->
+        <div class="campo-grupo">
+          <label for="precio" class="campo-label">
+            <i class="fas fa-dollar-sign"></i>
+            Precio <span class="campo-requerido">*</span>
+          </label>
+          <div class="precio-input-container">
+            <span class="precio-simbolo">$</span>
+            <input
+              type="number"
+              id="precio"
+              formControlName="precio"
+              class="campo-input precio-input"
+              [class.campo-error]="esCampoInvalido('precio')"
+              placeholder="0.00"
+              min="0.01"
+              max="99999999.99"
+              step="0.01"
+              required>
+          </div>
+          @if (esCampoInvalido('precio')) {
+            <div class="error-mensaje">
+              {{ obtenerMensajeError('precio') }}
+            </div>
+          }
+        </div>
+
+        <!-- Stock -->
+        <div class="campo-grupo">
+          <label for="stock" class="campo-label">
+            <i class="fas fa-boxes"></i>
+            Stock <span class="campo-requerido">*</span>
+          </label>
+          <input
+            type="number"
+            id="stock"
+            formControlName="stock"
+            class="campo-input"
+            [class.campo-error]="esCampoInvalido('stock')"
+            placeholder="0"
+            min="0"
+            max="999999"
+            required>
+          @if (esCampoInvalido('stock')) {
+            <div class="error-mensaje">
+              {{ obtenerMensajeError('stock') }}
+            </div>
+          }
+        </div>
+
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="form-acciones">
+        <button 
+          type="button" 
+          class="btn btn-secundario"
+          (click)="limpiarFormulario()"
+          [disabled]="loading">
+          <i class="fas fa-broom"></i> Limpiar
+        </button>
+        
+        <button 
+          type="button" 
+          class="btn btn-cancelar"
+          (click)="volver()"
+          [disabled]="loading">
+          <i class="fas fa-times"></i> Cancelar
+        </button>
+        
+        <button 
+          type="submit" 
+          class="btn btn-primario"
+          [disabled]="loading || productoForm.invalid">
+          @if (loading) {
+            <span class="loading-spinner">
+              <i class="fas fa-spinner"></i>
+            </span>
+            Procesando...
+          } @else {
+            <i class="fas" [ngClass]="modoEdicion ? 'fa-edit' : 'fa-save'"></i>
+            {{ modoEdicion ? 'Actualizar' : 'Guardar' }} Producto
+          }
+        </button>
+      </div>
+
+      <!-- Información adicional -->
+      @if (!modoEdicion) {
+        <div class="form-info">
+          <small class="texto-muted">
+            <i class="fas fa-info-circle"></i>
+            Todos los campos marcados con <span class="campo-requerido">*</span> son obligatorios.
+            El código debe ser único para cada producto.
+          </small>
+        </div>
+      }
+    </form>
+  </div>
+</div>
