@@ -46,14 +46,24 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "buildTarget": "minitienda:build"
+          },
           "configurations": {
-            "production": { "browserTarget": "minitienda:build:production" },
-            "development": { "browserTarget": "minitienda:build:development" }
+            "production": { 
+              "buildTarget": "minitienda:build:production"
+            },
+            "development": { 
+              "buildTarget": "minitienda:build:development"
+            }
           },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n"
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "buildTarget": "minitienda:build"
+          }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
@@ -67,6 +77,5 @@
         }
       }
     }
-  },
-  "defaultProject": "minitienda"
+  }
 }

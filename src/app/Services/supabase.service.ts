@@ -37,10 +37,9 @@ export class SupabaseService {
 
   async recuperarPassword(email: string) {
     return this.supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `https://aaronteb.github.io/minimercado-angular/reset-password`
+      redirectTo: `${window.location.origin}/reset-password`
     });
   }
-
   async actualizarPassword(newPassword: string) {
     const { data, error } = await this.supabase.auth.updateUser({
       password: newPassword
