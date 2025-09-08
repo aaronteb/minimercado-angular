@@ -50,7 +50,7 @@ export class ProductoFormComponent implements OnInit {
     this.loading = true;
     try {
       const { data, error } = await this.productosService.getProductoPorId(id);
-      
+
       if (error) {
         this.mostrarMensajeRespuesta('Error al cargar el producto', 'error');
         this.volver();
@@ -84,7 +84,7 @@ export class ProductoFormComponent implements OnInit {
     try {
       const datosProducto = this.productoForm.value;
       let resultado;
-      
+
       if (this.modoEdicion && this.productoId) {
         resultado = await this.productosService.actualizarProducto(this.productoId, datosProducto);
       } else {
@@ -96,7 +96,7 @@ export class ProductoFormComponent implements OnInit {
       } else {
         const accion = this.modoEdicion ? 'actualizado' : 'creado';
         this.mostrarMensajeRespuesta(`Producto ${accion} correctamente`, 'exito');
-        
+
         setTimeout(() => {
           this.volver();
         }, 2000);

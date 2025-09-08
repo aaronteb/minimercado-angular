@@ -96,8 +96,6 @@ export class ProductosService {
       .eq('id', id)
       .select();
   }
-
-  
   getProductosOrdenadosPorFecha(ascendente: boolean = false) {
     return this.supabase
       .from('productos')
