@@ -1,0 +1,32 @@
+.respuesta {
+  position: fixed;        /* Fija en la pantalla */
+  top: 20px;              /* Distancia desde arriba */
+  right: 20px;            /* Distancia desde la derecha */
+  padding: 12px 20px;
+  border-radius: 6px;
+  color: white;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 1000;          /* Siempre encima de otros elementos */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  opacity: 0.95;
+  transition: all 0.3s ease-in-out;
+}
+
+.respuesta.exito {
+  background-color: #28a745;
+}
+
+.respuesta.error {
+  background-color: #dc3545;
+}
+
+.respuesta button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}

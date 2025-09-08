@@ -1,0 +1,43 @@
+<!-- Mensaje de respuesta -->
+<app-respuesta
+  [mensaje]="mensaje"
+  [tipo]="tipo"
+  [visible]="mostrarMensaje">
+</app-respuesta>
+
+<div class="recuperar-wrapper">
+  <div class="recuperar-container">
+    
+    <div class="recuperar-header">
+      <div class="logo-icon">
+        <i class="fas fa-envelope"></i>
+      </div>
+      <h2>Recuperar Contraseña</h2>
+      <p>Ingresa tu correo para enviar un enlace de recuperación</p>
+    </div>
+
+    <form (ngSubmit)="enviarRecuperacion()" class="recuperar-form">
+      <div class="form-group">
+        <div class="input-wrapper">
+          <i class="fas fa-user"></i>
+          <input
+            type="email"
+            [(ngModel)]="email"
+            name="email"
+            placeholder="Email"
+            required
+          />
+        </div>
+      </div>
+
+      <button type="submit" class="recuperar-btn">
+        <i class="fas fa-paper-plane"></i>
+        Enviar enlace
+      </button>
+
+      <button type="button" class="volver-btn" (click)="volver.emit()">
+        Volver al login
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,61 @@
+<!-- Mensaje de respuesta -->
+<app-respuesta
+  [mensaje]="mensaje"
+  [tipo]="tipo"
+  [visible]="mostrarMensaje">
+</app-respuesta>
+
+<div class="nueva-wrapper">
+  <div class="nueva-container">
+    
+    <div class="nueva-header">
+      <div class="logo-icon">
+        <i class="fas fa-key"></i>
+      </div>
+      <h2>Nueva Contraseña</h2>
+      <p>Ingresa tu nueva contraseña</p>
+    </div>
+
+    <form (ngSubmit)="actualizarPassword()" class="nueva-form">
+      
+      <!-- Nueva Contraseña -->
+      <div class="form-group">
+        <div class="input-wrapper">
+          <i class="fas fa-lock"></i>
+          <input
+            type="password"
+            [(ngModel)]="nuevaPassword"
+            name="nuevaPassword"
+            placeholder="Nueva contraseña"
+            required
+            minlength="6"
+          />
+        </div>
+      </div>
+
+      <!-- Confirmar Contraseña -->
+      <div class="form-group">
+        <div class="input-wrapper">
+          <i class="fas fa-lock"></i>
+          <input
+            type="password"
+            [(ngModel)]="confirmarPassword"
+            name="confirmarPassword"
+            placeholder="Confirmar contraseña"
+            required
+            minlength="6"
+          />
+        </div>
+      </div>
+
+      <button type="submit" class="nueva-btn">
+        <i class="fas fa-check"></i>
+        Actualizar contraseña
+      </button>
+
+      <button type="button" class="volver-btn" (click)="irAlLogin()">
+        Volver al login
+      </button>
+    </form>
+  </div>
+</div>
