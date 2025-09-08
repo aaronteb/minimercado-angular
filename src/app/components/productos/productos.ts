@@ -112,7 +112,6 @@ export class ProductosComponent implements OnInit {
     this.router.navigate(['/productos/nuevo']);
   }
   verDetalles(producto: Producto) {
-    console.log('Ver detalles de:', producto);
   }
 
   editarProducto(producto: Producto) {

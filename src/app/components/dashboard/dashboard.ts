@@ -72,7 +72,6 @@ export class Dashboard implements OnInit {
   }
 
   seleccionarSeccion(seccion: any) {
-    console.log('Sección seleccionada:', seccion.titulo);
     if (seccion.titulo === 'Productos') {
       this.router.navigate(['/productos']);
     }
