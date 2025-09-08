@@ -41,13 +41,18 @@ export class SupabaseService {
   getCurrentSession() {
     return this.supabase.auth.getSession();
   }
-
+  async setSession(accessToken: string, refreshToken: string) {
+    const { data, error } = await this.supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken
+    });
+    return { data, error };
+  }
   async recuperarPassword(email: string) {
     return this.supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/minimercado-angular/#/reset-password`
+      redirectTo: 'https://aaronteb.github.io/minimercado-angular/#/reset-password'
     });
   }
-  
   async actualizarPassword(newPassword: string) {
     const { data, error } = await this.supabase.auth.updateUser({
       password: newPassword
