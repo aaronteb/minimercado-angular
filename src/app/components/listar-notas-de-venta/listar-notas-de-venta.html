@@ -1,0 +1,226 @@
+<div class="listar-notas-container">
+  
+  <!-- Header -->
+  <div class="header">
+    <button class="btn-volver" (click)="volver()">
+      <i class="fas fa-arrow-left"></i>
+      Volver
+    </button>
+    <h1>Historial de Notas de Venta</h1>
+  </div>
+
+  <!-- Loading -->
+  @if (loading) {
+    <app-loader></app-loader>
+  }
+
+  <!-- Lista de Notas -->
+  @if (!loading && !mostrandoDetalle) {
+    <div class="content">
+      
+      <!-- Filtros -->
+      <div class="section filtros">
+        <h2>Filtros</h2>
+        <div class="filtros-grid">
+          <div class="form-group">
+            <label for="filtroFecha">Fecha</label>
+            <input 
+              type="date" 
+              id="filtroFecha"
+              [(ngModel)]="filtroFecha"
+              placeholder="Filtrar por fecha">
+          </div>
+          
+          <div class="form-group">
+            <label for="filtroCliente">Cliente</label>
+            <input 
+              type="text" 
+              id="filtroCliente"
+              [(ngModel)]="filtroCliente"
+              placeholder="Buscar por nombre de cliente">
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen -->
+      @if (notas.length > 0) {
+        <div class="section resumen">
+          <div class="resumen-cards">
+            <div class="resumen-card">
+              <div class="card-icon">
+                <i class="fas fa-receipt"></i>
+              </div>
+              <div class="card-info">
+                <span class="card-number">{{ cantidadNotasFiltradas }}</span>
+                <span class="card-label">Notas encontradas</span>
+              </div>
+            </div>
+            
+            <div class="resumen-card">
+              <div class="card-icon">
+                <i class="fas fa-dollar-sign"></i>
+              </div>
+              <div class="card-info">
+                <span class="card-number">${{ totalVentas.toFixed(2) }}</span>
+                <span class="card-label">Total ventas</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Tabla de Notas -->
+      <div class="section">
+        <h2>Notas de Venta</h2>
+        
+        @if (notasFiltradas.length === 0) {
+          <div class="notas-vacias">
+            <i class="fas fa-search"></i>
+            <p>No se encontraron notas de venta</p>
+            <span>Intente ajustar los filtros</span>
+          </div>
+        }
+
+        @if (notasFiltradas.length > 0) {
+          <div class="notas-tabla">
+            <!-- Header de la tabla -->
+            <div class="tabla-header">
+              <div class="header-fecha">Fecha</div>
+              <div class="header-cliente">Cliente</div>
+              <div class="header-total">Total</div>
+              <div class="header-acciones">Acciones</div>
+            </div>
+
+            <!-- Filas de notas -->
+            @for (nota of notasFiltradas; track nota.id) {
+              <div class="tabla-fila">
+                <div class="fila-fecha">
+                  <div class="fecha-principal">{{ formatearFecha(nota.creado_en) }}</div>
+                </div>
+                
+                <div class="fila-cliente">
+                  <div class="cliente-info-completa">
+                    <div class="cliente-nombre">{{ nota.nombre }}</div>
+                    @if (nota.ruc || nota.cedula) {
+                      <div class="cliente-documentos">
+                        @if (nota.ruc) {
+                          <span class="documento">RUC: {{ nota.ruc }}</span>
+                        }
+                        @if (nota.cedula) {
+                          <span class="documento">CI: {{ nota.cedula }}</span>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+                
+                <div class="fila-total">
+                  ${{ nota.total.toFixed(2) }}
+                </div>
+                
+                <div class="fila-acciones">
+                  <button 
+                    class="btn-detalle" 
+                    (click)="verDetalle(nota.id)"
+                    title="Ver detalle">
+                    <i class="fas fa-eye"></i>
+                    Ver Detalle
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+    </div>
+  }
+
+  <!-- Modal de Detalle -->
+  @if (mostrandoDetalle && notaSeleccionada) {
+    <div class="modal-overlay">
+      <div class="modal-detalle">
+        <div class="modal-header">
+          <h2>Detalle de Nota de Venta</h2>
+          <button class="btn-cerrar" (click)="cerrarDetalle()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-content">
+          <!-- Info de la nota -->
+          <div class="detalle-info">
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Fecha:</label>
+                <span [innerHTML]="formatearFecha(notaSeleccionada.creado_en!)"></span>
+              </div>
+              <div class="info-item">
+                <label>Cliente:</label>
+                <span>{{ notaSeleccionada.nombre }}</span>
+              </div>
+              @if (notaSeleccionada.ruc) {
+                <div class="info-item">
+                  <label>RUC:</label>
+                  <span>{{ notaSeleccionada.ruc }}</span>
+                </div>
+              }
+              @if (notaSeleccionada.cedula) {
+                <div class="info-item">
+                  <label>Cédula:</label>
+                  <span>{{ notaSeleccionada.cedula }}</span>
+                </div>
+              }
+              @if (notaSeleccionada.correo) {
+                <div class="info-item">
+                  <label>Correo:</label>
+                  <span>{{ notaSeleccionada.correo }}</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Productos -->
+          <div class="detalle-productos">
+            <h3>Productos</h3>
+            <div class="productos-lista">
+              <div class="producto-header">
+                <div>Producto</div>
+                <div>Cantidad</div>
+                <div>Precio Unit.</div>
+                <div>Total</div>
+              </div>
+              
+              @for (detalle of notaSeleccionada.detalles; track detalle.id) {
+                <div class="producto-item">
+                  <div class="producto-info">
+                    <div class="producto-nombre">{{ detalle.productos?.nombre || 'Producto' }}</div>
+                    <div class="producto-codigo">{{ detalle.productos?.codigo || '' }}</div>
+                  </div>
+                  <div class="producto-cantidad">{{ detalle.cantidad }}</div>
+                  <div class="producto-precio">${{ detalle.precio_unitario.toFixed(2) }}</div>
+                  <div class="producto-total">${{ detalle.subtotal.toFixed(2) }}</div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Total -->
+          <div class="detalle-total">
+            <div class="total-final">
+              <span>Total: ${{ notaSeleccionada.total.toFixed(2) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>
+
+<!-- Componente de Respuesta -->
+<app-respuesta 
+  [mensaje]="mensajeRespuesta"
+  [tipo]="tipoRespuesta"
+  [visible]="mostrarRespuesta">
+</app-respuesta>

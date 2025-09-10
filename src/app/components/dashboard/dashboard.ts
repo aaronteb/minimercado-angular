@@ -15,22 +15,10 @@ export class Dashboard implements OnInit {
   
   secciones = [
     { 
-      titulo: 'Ventas',
-      icono: 'fas fa-shopping-cart',
-      color: '#4ECDC4',
-      descripcion: 'Gestión de ventas diarias'
-    },
-    { 
       titulo: 'Productos',
       icono: 'fas fa-boxes',
       color: '#45B7D1',
       descripcion: 'Control de productos y stock'
-    },
-    { 
-      titulo: 'Clientes',
-      icono: 'fas fa-users',
-      color: '#96CEB4',
-      descripcion: 'Base de datos de clientes'
     },
     { 
       titulo: 'Reportes',
@@ -39,16 +27,16 @@ export class Dashboard implements OnInit {
       descripcion: 'Informes y estadísticas'
     },
     { 
-      titulo: 'Proveedores',
-      icono: 'fas fa-truck',
+      titulo: 'Historial de Ventas',
+      icono: 'fas fa-history',
       color: '#FF6B6B',
-      descripcion: 'Gestión de proveedores'
+      descripcion: 'Historial de notas de venta'
     },
     { 
-      titulo: 'Configuración',
-      icono: 'fas fa-cog',
+      titulo: 'Nota de Venta',
+      icono: 'fas fa-receipt',
       color: '#A8E6CF',
-      descripcion: 'Configuración del sistema'
+      descripcion: 'Generar notas de venta'
     }
   ];
 
@@ -74,6 +62,10 @@ export class Dashboard implements OnInit {
   seleccionarSeccion(seccion: any) {
     if (seccion.titulo === 'Productos') {
       this.router.navigate(['/productos']);
+    } else if (seccion.titulo === 'Nota de Venta') {
+      this.router.navigate(['/nota-venta']);
+    } else if (seccion.titulo === 'Historial de Ventas') {
+      this.router.navigate(['/historial-ventas']);
     }
   }
 }

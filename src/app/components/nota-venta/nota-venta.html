@@ -1,0 +1,220 @@
+<div class="nota-venta-container">
+  
+  <!-- Header -->
+  <div class="header">
+    <button class="btn-volver" (click)="volver()">
+      <i class="fas fa-arrow-left"></i>
+      Volver
+    </button>
+    <h1>Nueva Nota de Venta</h1>
+  </div>
+
+  <!-- Loading -->
+  <app-loader *ngIf="loading || guardando"></app-loader>
+
+  <div *ngIf="!loading" class="content">
+    
+    <!-- Datos del Cliente -->
+    <div class="section">
+      <h2>Datos del Cliente</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="nombre">Nombre</label>
+          <input 
+            type="text" 
+            id="nombre"
+            [(ngModel)]="cliente.nombre"
+            placeholder="Nombre del cliente (opcional)">
+        </div>
+        
+        <div class="form-group">
+          <label for="ruc">RUC</label>
+          <input 
+            type="text" 
+            id="ruc"
+            [(ngModel)]="cliente.ruc"
+            placeholder="RUC (opcional)"
+            maxlength="13">
+        </div>
+        
+        <div class="form-group">
+          <label for="cedula">Cédula</label>
+          <input 
+            type="text" 
+            id="cedula"
+            [(ngModel)]="cliente.cedula"
+            placeholder="Cédula (opcional)"
+            maxlength="10">
+        </div>
+        
+        <div class="form-group">
+          <label for="correo">Correo</label>
+          <input 
+            type="email" 
+            id="correo"
+            [(ngModel)]="cliente.correo"
+            placeholder="correo@ejemplo.com (opcional)">
+        </div>
+      </div>
+    </div>
+
+    <!-- Código de Barras -->
+    <div class="section">
+      <h2>Código de Barras</h2>
+      <div class="codigo-barras-section">
+        <div class="codigo-barras-info">
+          <i class="fas fa-barcode"></i>
+          <p>Escanee con la pistola o ingrese manualmente</p>
+        </div>
+        
+        <div class="codigo-barras-controls">
+          <div class="form-group">
+            <label for="codigoEscaneado">Código del Producto</label>
+            <input 
+              type="text" 
+              id="codigoEscaneado"
+              [(ngModel)]="codigoEscaneado"
+              placeholder="Código del producto"
+              (keyup.enter)="buscarPorCodigo()">
+          </div>
+          
+          <div class="form-group">
+            <label for="cantidadCodigo">Cantidad</label>
+            <input 
+              type="number" 
+              id="cantidadCodigo"
+              [(ngModel)]="cantidadCodigoBarras"
+              min="1"
+              placeholder="1">
+          </div>
+          
+          <button 
+            class="btn btn-primary" 
+            (click)="buscarPorCodigo()"
+            [disabled]="buscandoProducto">
+            <i class="fas fa-search"></i>
+            {{ buscandoProducto ? 'Buscando...' : 'Buscar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Carrito -->
+    <div class="section">
+      <h2>Productos Seleccionados</h2>
+      
+      <div *ngIf="carrito.length === 0" class="carrito-vacio">
+        <i class="fas fa-shopping-cart"></i>
+        <p>No hay productos seleccionados</p>
+        <span>Use la pistola de código de barras para agregar productos</span>
+      </div>
+
+      <div *ngIf="carrito.length > 0" class="carrito">
+        <!-- Header de la tabla -->
+        <div class="carrito-header">
+          <div class="header-producto">Producto</div>
+          <div class="header-precio">Precio Unit.</div>
+          <div class="header-cantidad">Cantidad</div>
+          <div class="header-total">Total</div>
+          <div class="header-acciones">Acciones</div>
+        </div>
+
+        <!-- Items del carrito -->
+        <div class="carrito-item" *ngFor="let item of carrito; let i = index">
+          <div class="item-producto">
+            <div class="producto-nombre">{{ item.producto.nombre }}</div>
+            <div class="producto-codigo">Código: {{ item.producto.codigo }}</div>
+          </div>
+          
+          <div class="item-precio-unitario">
+            ${{ item.producto.precio.toFixed(2) }}
+          </div>
+          
+          <div class="item-cantidad">
+            <div class="cantidad-control">
+              <button 
+                class="btn-cantidad" 
+                (click)="actualizarCantidad(i, item.cantidad - 1)"
+                [disabled]="item.cantidad <= 1">
+                <i class="fas fa-minus"></i>
+              </button>
+              <input 
+                type="number" 
+                class="cantidad-input"
+                [value]="item.cantidad"
+                (change)="actualizarCantidad(i, +$event.target.value)"
+                min="1"
+                [max]="item.producto.stock">
+              <button 
+                class="btn-cantidad" 
+                (click)="actualizarCantidad(i, item.cantidad + 1)"
+                [disabled]="item.cantidad >= item.producto.stock">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+            <div class="stock-info">Stock: {{ item.producto.stock }}</div>
+          </div>
+          
+          <div class="item-total">
+            ${{ item.subtotal.toFixed(2) }}
+          </div>
+          
+          <div class="item-acciones">
+            <button class="btn-eliminar" (click)="eliminarDelCarrito(i)" title="Eliminar producto">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Resumen del carrito -->
+        <div class="carrito-resumen">
+          <div class="resumen-info">
+            <span class="total-items">{{ carrito.length }} producto(s)</span>
+            <span class="total-cantidad">{{ totalCantidad }} unidad(es)</span>
+          </div>
+          <div class="resumen-total">
+            <span class="total-label">Total:</span>
+            <span class="total-amount">${{ total.toFixed(2) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Totales -->
+    <div *ngIf="carrito.length > 0" class="section totales">
+      <div class="totales-grid">
+        <div class="total-line total-final">
+          <span>Total:</span>
+          <span>${{ total.toFixed(2) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="actions">
+      <button 
+        class="btn btn-secondary" 
+        (click)="limpiarFormulario()"
+        [disabled]="guardando">
+        <i class="fas fa-broom"></i>
+        Limpiar
+      </button>
+      
+      <button 
+        class="btn btn-success" 
+        (click)="guardarNotaVenta()"
+        [disabled]="guardando || carrito.length === 0">
+        <i class="fas fa-save"></i>
+        {{ guardando ? 'Guardando...' : 'Guardar Nota' }}
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Componente de Respuesta - Posición Fija -->
+<app-respuesta 
+  [mensaje]="mensajeRespuesta"
+  [tipo]="tipoRespuesta"
+  [visible]="mostrarRespuesta">
+</app-respuesta>
