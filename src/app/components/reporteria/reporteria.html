@@ -1,0 +1,110 @@
+<div class="reporteria-container">
+  <div class="header-section">
+    <button class="btn-atras" (click)="volverAlDashboard()">
+      <i class="fas fa-arrow-left"></i> Volver al Dashboard
+    </button>
+    <h2>Reportería</h2>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros-section">
+    <div class="filtro-grupo">
+      <label for="anio">Año:</label>
+      <select id="anio" [(ngModel)]="anioSeleccionado" (change)="onFiltroChange()">
+        <option [value]="2024">2024</option>
+        <option [value]="2025">2025</option>
+        <option [value]="2026">2026</option>
+      </select>
+    </div>
+    
+    <div class="filtro-grupo">
+      <label for="mes">Mes:</label>
+      <select id="mes" [(ngModel)]="mesSeleccionado" (change)="onFiltroChange()">
+        <option *ngFor="let mes of meses" [value]="mes.valor">
+          {{ mes.nombre }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Botones de Exportación -->
+  <div class="botones-exportacion">
+    <button class="btn-exportar" (click)="exportarExcelGeneral()">
+      <i class="fas fa-chart-line"></i> Exportar Reporte General
+    </button>
+    <button class="btn-exportar-mes" (click)="exportarExcelMesEspecifico()">
+      <i class="fas fa-calendar"></i> Exportar Mes Seleccionado
+    </button>
+  </div>
+
+  <!-- Gráfica General - Ventas por Mes -->
+  <div class="grafica-section">
+    <h3>Ventas por Mes (Todos los Meses)</h3>
+    <div class="grafica-container" *ngIf="!cargandoGraficas && ventasPorMes.length > 0">
+      <div class="barra-container" *ngFor="let venta of ventasPorMes">
+        <div class="barra-label">{{ venta.mes }}</div>
+        <div class="barra-wrapper">
+          <div 
+            class="barra-mes" 
+            [style.width.%]="getAnchoBarra(venta.total, getMaxVentaMes())"
+            [title]="formatearMoneda(venta.total)">
+          </div>
+          <span class="barra-valor">{{ formatearMoneda(venta.total) }}</span>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="cargandoGraficas" class="loading">
+      <i class="fas fa-spinner fa-spin"></i> Cargando gráfica general...
+    </div>
+    <div *ngIf="!cargandoGraficas && ventasPorMes.length === 0" class="no-datos">
+      No hay datos de ventas disponibles
+    </div>
+  </div>
+
+  <!-- Resumen del Mes Seleccionado -->
+  <div class="resumen-section" *ngIf="!cargandoResumen && resumenMesActual">
+    <h3>Resumen de {{ meses[mesSeleccionado - 1].nombre }} {{ anioSeleccionado }}</h3>
+    <div class="resumen-cards">
+      <div class="card-resumen">
+        <div class="card-titulo">Total Ventas</div>
+        <div class="card-valor">{{ formatearMoneda(resumenMesActual.totalVentas) }}</div>
+      </div>
+      <div class="card-resumen">
+        <div class="card-titulo">Cantidad de Notas</div>
+        <div class="card-valor">{{ resumenMesActual.cantidadNotas }}</div>
+      </div>
+      <div class="card-resumen">
+        <div class="card-titulo">Venta Promedio</div>
+        <div class="card-valor">{{ formatearMoneda(resumenMesActual.ventaPromedio) }}</div>
+      </div>
+    </div>
+
+    <!-- Gráfica del Mes Específico - Ventas por Día -->
+    <div class="grafica-mes" *ngIf="resumenMesActual.ventasPorDia.length > 0">
+      <h4>Ventas por Día</h4>
+      <div class="grafica-dias">
+        <div class="barra-dia-container" *ngFor="let venta of resumenMesActual.ventasPorDia">
+          <div class="barra-dia-label">{{ venta.fecha.split('-')[2] }}</div>
+          <div class="barra-dia-wrapper">
+            <div 
+              class="barra-dia" 
+              [style.width.%]="getAnchoBarra(venta.total, getMaxVentaDia())"
+              [title]="formatearMoneda(venta.total)">
+            </div>
+            <span class="barra-dia-valor">{{ formatearMoneda(venta.total) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="cargandoResumen" class="loading">
+    <i class="fas fa-spinner fa-spin"></i> Cargando resumen del mes...
+  </div>
+
+  <app-respuesta 
+    [mensaje]="mensajeRespuesta"
+    [tipo]="tipoRespuesta"
+    [visible]="mostrarRespuesta">
+  </app-respuesta>
+</div>

@@ -7,6 +7,7 @@ import { authGuard } from './Services/authGuard';
 import { ProductoFormComponent } from './components/producto-form-component/producto-form-component';
 import { NotaVentaComponent } from './components/nota-venta/nota-venta';
 import { ListarNotasDeVenta } from './components/listar-notas-de-venta/listar-notas-de-venta';
+import { ReporteriaComponent } from './components/reporteria/reporteria';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -42,5 +43,10 @@ export const routes: Routes = [
     component: ListarNotasDeVenta,
     canActivate: [authGuard] 
   },
+    { 
+      path: 'reporteria', 
+      component: ReporteriaComponent,
+      canActivate: [authGuard] },
+
   { path: '**', redirectTo: '/login' }
 ];

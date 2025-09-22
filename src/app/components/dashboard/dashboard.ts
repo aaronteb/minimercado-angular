@@ -60,12 +60,22 @@ export class Dashboard implements OnInit {
   }
 
   seleccionarSeccion(seccion: any) {
-    if (seccion.titulo === 'Productos') {
+  switch (seccion.titulo) {
+    case 'Productos':
       this.router.navigate(['/productos']);
-    } else if (seccion.titulo === 'Nota de Venta') {
+      break;
+    case 'Nota de Venta':
       this.router.navigate(['/nota-venta']);
-    } else if (seccion.titulo === 'Historial de Ventas') {
+      break;
+    case 'Historial de Ventas':
       this.router.navigate(['/historial-ventas']);
-    }
+      break;
+    case 'Reportes':
+      this.router.navigate(['/reporteria']); 
+      break;
+    default:
+      console.warn('Sección no implementada:', seccion.titulo);
+      break;
   }
+}
 }

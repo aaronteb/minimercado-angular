@@ -96,7 +96,7 @@ export class SupabaseService {
           .from('notas_venta')
           .delete()
           .eq('id', notaCreada.id);
-        
+
         return { data: null, error: errorDetalles };
       }
 
@@ -116,12 +116,12 @@ export class SupabaseService {
         }
       }
 
-      return { 
-        data: { 
-          nota: notaCreada, 
-          detalles: detallesCreados 
-        }, 
-        error: null 
+      return {
+        data: {
+          nota: notaCreada,
+          detalles: detallesCreados
+        },
+        error: null
       };
 
     } catch (error) {
@@ -177,4 +177,99 @@ export class SupabaseService {
       .select('*')
       .order('nombre');
   }
+  async obtenerVentasPorMes(): Promise<{ mes: string; total: number }[]> {
+    const { data: notas, error } = await this.supabase
+      .from('notas_venta')
+      .select('total, creado_en');
+
+    if (error) return [];
+    const ventasPorMes: Record<string, number> = {};
+    notas.forEach((nota: any) => {
+      const fecha = new Date(nota.creado_en);
+      const mes = `${fecha.getFullYear()}-${(fecha.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}`; 
+      ventasPorMes[mes] = (ventasPorMes[mes] || 0) + nota.total;
+    });
+
+    // Convertir a array
+    return Object.keys(ventasPorMes).map(mes => ({
+      mes,
+      total: ventasPorMes[mes],
+    }));
+  }
+async obtenerVentasPorMesEspecifico(año: number, mes: number): Promise<{ fecha: string; total: number }[]> {
+  const inicioMes = `${año}-${mes.toString().padStart(2, '0')}-01`;
+  const finMes = new Date(año, mes, 0).getDate(); // Último día del mes
+  const finMesStr = `${año}-${mes.toString().padStart(2, '0')}-${finMes}`;
+
+  const { data: notas, error } = await this.supabase
+    .from('notas_venta')
+    .select('total, creado_en')
+    .gte('creado_en', inicioMes)
+    .lte('creado_en', finMesStr + ' 23:59:59');
+
+  if (error) return [];
+  const ventasPorDia: Record<string, number> = {};
+  notas.forEach((nota: any) => {
+    const fecha = new Date(nota.creado_en);
+    const dia = fecha.toISOString().split('T')[0]; // YYYY-MM-DD
+    ventasPorDia[dia] = (ventasPorDia[dia] || 0) + nota.total;
+  });
+
+  return Object.keys(ventasPorDia).map(fecha => ({
+    fecha,
+    total: ventasPorDia[fecha],
+  }));
+}
+
+async obtenerResumenVentasMes(año: number, mes: number): Promise<{
+  totalVentas: number;
+  cantidadNotas: number;
+  ventaPromedio: number;
+  ventasPorDia: { fecha: string; total: number }[];
+}> {
+  const inicioMes = `${año}-${mes.toString().padStart(2, '0')}-01`;
+  const finMes = new Date(año, mes, 0).getDate();
+  const finMesStr = `${año}-${mes.toString().padStart(2, '0')}-${finMes}`;
+
+  const { data: notas, error } = await this.supabase
+    .from('notas_venta')
+    .select('total, creado_en')
+    .gte('creado_en', inicioMes)
+    .lte('creado_en', finMesStr + ' 23:59:59');
+
+  if (error) {
+    return {
+      totalVentas: 0,
+      cantidadNotas: 0,
+      ventaPromedio: 0,
+      ventasPorDia: []
+    };
+  }
+
+  const totalVentas = notas.reduce((sum, nota) => sum + nota.total, 0);
+  const cantidadNotas = notas.length;
+  const ventaPromedio = cantidadNotas > 0 ? totalVentas / cantidadNotas : 0;
+  const ventasPorDia: Record<string, number> = {};
+  notas.forEach((nota: any) => {
+    const fecha = new Date(nota.creado_en);
+    const dia = fecha.toISOString().split('T')[0];
+    ventasPorDia[dia] = (ventasPorDia[dia] || 0) + nota.total;
+  });
+
+  const ventasPorDiaArray = Object.keys(ventasPorDia)
+    .sort()
+    .map(fecha => ({
+      fecha,
+      total: ventasPorDia[fecha],
+    }));
+
+  return {
+    totalVentas,
+    cantidadNotas,
+    ventaPromedio,
+    ventasPorDia: ventasPorDiaArray
+  };
+}
 }
